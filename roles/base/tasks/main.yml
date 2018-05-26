@@ -1,0 +1,96 @@
+---
+- name: create sudo group
+  group:
+      name: sudo
+      state: present
+
+- name: create user wxcafe
+  user:
+    name: wxcafe
+    comment: "Wxcafe"
+    groups: wheel,wxcafe,sudo
+
+- name: copy ssh pubkey for wxcafe
+  copy:
+    src: etc/ssh/wxcafe_authorized_keys
+    dest: /home/wxcafe/.ssh/authorized_keys
+    owner: wxcafe
+    group: wxcafe
+    mode: 0600
+
+- name: create user multun
+  user:
+    name: multun
+    comment: "multun"
+    groups: wheel,multun,sudo
+
+- name: copy ssh pubkey for multun
+  copy:
+    src: etc/ssh/multun_authorized_keys
+    dest: /home/multun/.ssh/authorized_keys
+    owner: multun
+    group: multun
+    mode: 0600
+
+- name: install packages
+  package:
+    name: vim,zsh,git,sudo,grc,nmap,mtr,snmpd,ansible,letsencrypt
+    state: present
+
+- name: install snmpd configuration
+  copy:
+      src: etc/snmp/snmpd.conf
+      dest: /etc/snmp/snmpd.conf
+      owner: root
+      group: root
+      mode: 0400
+
+- name: restart snmpd
+  service:
+    name: snmpd
+    state: restarted
+
+- name: install sudo config
+  copy:
+    src: etc/sudo/sudoers
+    dest: /etc/sudoers
+    owner: root
+    group: wheel
+    mode: 0440
+
+- name: update sshd_config
+  copy:
+    src: etc/ssh/sshd_config
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: wheel
+    mode: 0644
+
+- name: reload sshd
+  service:
+    name: sshd
+    state: reloaded
+
+- name: install base nginx configuration
+  copy:
+    src: etc/nginx/nginx.conf
+    dest: /etc/nginx/sites-enabled/default
+
+- name: reload nginx
+  service:
+    name: nginx
+    state: reloaded
+
+- name: request LE certificate
+  shell: certbot certonly --agree-tos --email root@gconfs.fr -n --cert-name gconfs.fr --force-renew --rsa-key-size 4096 --webroot -w /srv/letsencrypt -d gconfs.fr -d wiki.gconfs.fr
+
+- name: remove base nginx configuration
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: re-reload nginx
+  service:
+    name: nginx
+    state: reloaded
+# vim: set et st=2 sts=2 sw=2 ts=2:

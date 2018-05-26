@@ -1,0 +1,13 @@
+[Unit]
+Description=Gitit Wiki server
+After=network.target
+
+[Service]
+WorkingDirectory=/srv/gitit
+ExecStart=/usr/bin/gitit -f /etc/gitit.conf
+ExecReload=/bin/kill -HUP $MAINPID; /usr/bin/gitit -f /etc/gitit.conf
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,71 @@
+---
+
+- name: install packages
+  package:
+    name: nginx,gitit
+    state: present
+
+- name: install nginx vhost for wiki
+  copy:
+    src: etc/nginx.conf
+    dest: /etc/nginx/sites-enabled/wiki
+
+- name: install gitit configuration
+  copy:
+    src: etc/gitit.conf
+    dest: /etc/gitit.conf
+
+- name: install gitit service
+  copy:
+    src: etc/systemd/gitit.service
+    dest: /etc/systemd/system/gitit.service
+
+- name: daemon-reload
+  shell: systemctl daemon-reload
+
+- name: create gitit directory
+  file:
+    path: /srv/gitit
+    state: directory
+
+- name: enable gitit service
+  service:
+    name: gitit
+    enabled: yes
+    state: restarted
+
+- name: create nginx wiki log directory
+  file:
+    path: /var/log/nginx/wiki
+    state: directory
+
+- name: enable nginx service
+  service:
+    name: nginx
+    enabled: yes
+    state: restarted
+
+- name: install gconfs logo
+  copy:
+    src: static/gconfs.png
+    dest: /srv/gitit/static/img/logo.png
+
+- name: install custom css
+  copy:
+    src: static/custom.css
+    dest: /srv/gitit/static/img/custom.css
+
+- name: clone wiki repository
+  git:
+      repo: https://github.com/gconfs/wiki
+      dest: /srv/gitit/wikidata
+
+- name: set permissions for wikidata
+  file:
+      path: /srv/gitit/wikidata
+      owner: root
+      group: wheel
+      mode: 0775
+      recurse: yes
+
+# vim: set et st=2 sts=2 sw=2 ts=2:

@@ -1,0 +1,37 @@
+
+- name: install packages
+  package:
+      name: nginx,python-pip
+      state: present
+
+- name: install nginx vhost for website
+  copy:
+    src: etc/nginx.conf
+    dest: /etc/nginx/sites-enabled/website
+
+- name: git clone gconfs website
+  git:
+    repo: 'https://github.com/gconfs/website-hyde'
+    dest: /srv/website/
+
+- name: install hyde
+  pip:
+    name: hyde
+
+- name: compile website
+  shell: hyde gen
+  args:
+    chdir: /srv/website
+
+- name: create nginx log directory
+  file:
+      path: /var/log/nginx/website
+      state: directory
+
+- name: enable nginx service
+  service:
+    name: nginx
+    enabled: yes
+    state: restarted
+
+# vim: set et st=2 sts=2 sw=2 ts=2:
