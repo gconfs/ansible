@@ -1,0 +1,86 @@
+---
+
+- name: install packages
+  package:
+    name: nginx,composer,unzip,g++,mariadb-server,php7.0,php7.0-cli,php7.0-common,libapache2-mod-php7.0,php7.0-json,php7.0-readline,php7.0-mysqlnd,libonig4,libqdbm14,php7.0-gd,php7.0-intl,php7.0-simplexml,php7.0-curl,php7.0-dom,php7.0-mbstring,libgpgme11-dev,php7.0-gnupg
+    state: present
+
+- name: mysql config
+  shell: mysql -f -e 'create database passbolt; create user passbolt; grant all on passbolt.* to "passbolt"@"localhost" identified by "{{ mysql_vault_pass }}"; flush privileges;'
+  args:
+      creates: /opt/ansible/mysql_vault_configured
+
+- name: create lock file
+  file:
+    path: /opt/ansible/mysql_vault_configured
+
+- name: install nginx config
+  copy:
+    src: etc/nginx.conf
+    dest: /etc/nginx/sites-enabled/vault
+
+- name: clone passbolt repo
+  git:
+    repo: https://github.com/passbolt/passbolt_api
+    dest: /srv/vault
+    force: yes
+  when: overwrite is defined
+
+- block:
+  - name: copy gpg private key to passbolt
+    shell: mv {{ private_key }} /srv/vault/config/gpg/serverkey_private.asc
+
+  - name: copy gpg public key to passbolt
+    shell: mv {{ public_key }} /srv/vault/config/gpg/serverkey.asc
+  when: overwrite is defined
+
+- name: restrict permissions on gpg keys
+  file:
+    path: /srv/vault/config/gpg/
+    mode: 0740
+    recurse: true
+
+- name: change permissions on /var/www/
+  file:
+    path: /var/www
+    owner: www-data
+    group: www-data
+    recurse: true
+
+- name: create www-data gpg keychain
+  shell: gpg --list-keys
+  become: yes
+  become_user: www-data
+
+- name: set owner for passbolt folder
+  file:
+    path: /srv/vault/
+    owner: www-data
+    group: www-data
+    recurse: true
+
+- name: install passbolt
+  shell: composer install --no-dev
+  args:
+    chdir: /srv/vault
+
+- name: install config file
+  template:
+    src: etc/passbolt.php
+    dest: /srv/vault/config/passbolt.php
+
+
+- name: finish passbolt installation
+  shell: bash -c "echo -e 'bureau@gconfs.fr\nBureau\nGconfs' | ./bin/cake passbolt install --force"
+  args:
+    chdir: /srv/vault
+  become: yes
+  become_user: www-data
+  when: overwrite is defined
+  register: output
+
+- debug: var=output.stdout_lines
+
+
+
+# vim: set et st=2 sts=2 sw=2 ts=2:
