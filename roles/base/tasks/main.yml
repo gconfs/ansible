@@ -93,7 +93,7 @@
     state: reloaded
 
 - name: request LE certificate
-  shell: certbot certonly --agree-tos --email root@gconfs.fr -n --cert-name gconfs.fr --force-renew --rsa-key-size 4096 --webroot -w /srv/letsencrypt -d gconfs.fr -d wiki.gconfs.fr -d vault.gconfs.fr
+  shell: certbot certonly --agree-tos --email root@gconfs.fr -n --cert-name gconfs.fr --force-renew --rsa-key-size 4096 --webroot -w /srv/letsencrypt -d gconfs.fr -d wiki.gconfs.fr -d vault.gconfs.fr -d pad.gconfs.fr
 
 - name: clear nginx configuration
   file:

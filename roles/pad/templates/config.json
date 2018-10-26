@@ -1,0 +1,32 @@
+{
+    "production": {
+        "domain": "pad.gconfs.fr",
+        "host": "127.0.0.1",
+        "protocolUseSSL": true,
+        "hsts": {
+            "enable": true,
+            "maxAgeSeconds": "31536000",
+            "includeSubdomains": true,
+            "preload": true
+        },
+        "csp": {
+            "enable": true,
+            "directives": {
+            },
+            "upgradeInsecureRequests": "auto",
+            "addDefaults": true,
+            "addDisqus": false,
+            "addGoogleAnalytics": false
+        },
+        "db": {
+            "username": "codimd",
+            "password": "{{ db_password }}",
+            "database": "codimd",
+            "host": "localhost",
+            "port": "3306",
+            "dialect": "mysql"
+        },
+        "sessionSecret": "randomgconfssessionsecret"
+    }
+}
+

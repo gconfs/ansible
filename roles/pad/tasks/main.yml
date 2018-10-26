@@ -1,0 +1,84 @@
+---
+- name: install nodejs 8 repo
+  shell: "wget -qO- https://deb.nodesource.com/setup_8.x | sudo -E bash -"
+
+- name: install nodejs 8
+  apt:
+    name: nodejs
+    state: present
+
+- name: install npm
+  apt:
+    name: npm
+    state: present
+
+- name: create mysql db
+  shell: mysql -f -e 'create database codimd character set utf8; create user codimd; grant all on codimd.* to "codimd"@"localhost" identified by "{{ db_password }}"; flush privileges;'; touch /opt/ansible/mysql_pad_configured
+  args:
+      creates: /opt/ansible/mysql_pad_configured
+
+- name: clone codimd repo
+  git:
+    repo: https://github.com/hackmdio/codimd
+    dest: /srv/pad
+
+- name: npm install
+  shell: npm install
+  args:
+    chdir: /srv/pad/
+
+- name: run setup
+  shell: ./bin/setup
+  args:
+    chdir: /srv/pad/
+
+- name: run config template
+  template:
+    src: config.json
+    dest: /srv/pad/config.json
+
+- name: build front end
+  shell: npm run build
+  args:
+    chdir: /srv/pad/
+  when: skip_front_build is not defined
+
+- name: run sequelizerc template
+  template:
+    src: sequelizerc
+    dest: /srv/pad/.sequelizerc
+
+- name: sequelize setup db
+  shell: ./node_modules/.bin/sequelize db:migrate
+  args:
+    chdir: /srv/pad/
+
+- name: install codimd service
+  copy:
+    src: codimd.service
+    dest: /etc/systemd/system/codimd.service
+
+- name: daemon-reload
+  shell: systemctl daemon-reload
+
+- name: enable codimd service
+  service:
+    name: codimd
+    state: started
+    enabled: yes
+
+- name: copy nginx config
+  copy:
+    src: pad.nginx
+    dest: /etc/nginx/sites-enabled/pad
+
+- name: create nginx log dir
+  file:
+    path: /var/log/nginx/pad/
+    state: directory
+
+- name: reload nginx
+  service:
+    name: nginx
+    state: reloaded
+

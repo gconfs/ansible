@@ -1,0 +1,13 @@
+[Unit]
+Description=CodiMD
+After=nginx.service
+
+[Service]
+Environment=NODE_ENV=production
+Type=simple
+User=www-data
+ExecStart=/usr/bin/node /srv/pad/app.js
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
