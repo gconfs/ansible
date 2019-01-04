@@ -1,0 +1,29 @@
+---
+
+- name: install packages
+  package:
+    name: nginx
+    state: present
+
+- name: install nginx vhost for jdmi
+  copy:
+    src: etc/nginx.conf
+    dest: /etc/nginx/sites-enabled/jdmi
+
+- name: create nginx wiki log directory
+  file:
+    path: /var/log/nginx/jdmi
+    state: directory
+
+- name: enable nginx service
+  service:
+    name: nginx
+    enabled: yes
+    state: restarted
+
+- name: clone wiki repository
+  git:
+      repo: https://github.com/gconfs/jdmi
+      dest: /srv/jdmi
+
+# vim: set et st=2 sts=2 sw=2 ts=2:
