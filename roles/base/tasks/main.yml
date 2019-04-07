@@ -32,6 +32,20 @@
     group: multun
     mode: 0600
 
+- name: create user shepard
+  user:
+    name: shepard
+    comment: "shepard"
+    groups: wheel,shepard,sudo
+
+- name: copy ssh pubkey for shepard
+  copy:
+    src: etc/ssh/shepard_authorized_keys
+    dest: /home/shepard/.ssh/authorized_keys
+    owner: shepard
+    group: shepard
+    mode: 0600
+
 - name: install packages
   package:
     name: vim,zsh,git,sudo,grc,nmap,mtr,snmpd,ansible,letsencrypt
