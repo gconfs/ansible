@@ -8,7 +8,7 @@
 - name: mysql config
   shell: mysql -f -e 'create database passbolt; create user passbolt; grant all on passbolt.* to "passbolt"@"localhost" identified by "{{ mysql_vault_pass }}"; flush privileges;'
   args:
-      creates: /opt/ansible/mysql_vault_configured
+    creates: /opt/ansible/mysql_vault_configured
 
 - name: create lock file
   file:

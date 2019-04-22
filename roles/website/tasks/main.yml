@@ -1,37 +1,76 @@
-
 - name: install packages
   package:
-      name: nginx,python-pip
+      name: nginx,python3-pip,python3-venv,uwsgi,uwsgi-plugin-python3,default-libmysqlclient-dev
       state: present
 
-- name: install nginx vhost for website
+- name: install nginx vhost for django website
   copy:
     src: etc/nginx.conf
     dest: /etc/nginx/sites-enabled/website
-
-- name: git clone gconfs website
-  git:
-    repo: 'https://github.com/gconfs/website-hyde'
-    dest: /srv/website/
-
-- name: install hyde
-  pip:
-    name: hyde
-
-- name: compile website
-  shell: hyde gen
-  args:
-    chdir: /srv/website
 
 - name: create nginx log directory
   file:
       path: /var/log/nginx/website
       state: directory
 
+- name: mysql config
+  shell: mysql -f -e 'create database website character set utf8; create user website; grant all on website.* to "website"@"localhost" identified by "{{ website_mysql_pass }}"; flush privileges;'
+  args:
+    creates: /opt/ansible/mysql_website_configured
+
+- name: git clone gconfs django website
+  git:
+    repo: 'https://github.com/obynio/gconfs-web'
+    dest: /srv/website/
+
+- name: install uwsgi configuration
+  copy:
+    src: etc/website.ini
+    dest: /etc/uwsgi/apps-enabled/
+
+- name: install python packages
+  pip:
+    requirements: /srv/website/requirements.txt
+    virtualenv_python: python3
+    virtualenv: /srv/website/venv
+
+- name: run local settings template
+  template:
+    src: local_settings.py
+    dest: /srv/website/gconfs/local_settings.py
+
+- name: django collectstatic
+  django_manage: 
+    command: collectstatic
+    virtualenv: /srv/website/venv
+    app_path: /srv/website
+
+- name: django migrate
+  django_manage: 
+    command: migrate
+    virtualenv: /srv/website/venv
+    app_path: /srv/website
+
+- name: django runcrons
+  django_manage: 
+    command: runcrons
+    virtualenv: /srv/website/venv
+    app_path: /srv/website
+
+- name: set cron job
+  cron:
+    name: "fetch latest youtube videos"
+    special_time: hourly
+    job: "source /srv/website/venv/bin/activate && python /srv/website/manage.py runcrons > /dev/null"
+
+- name: enable uwsgi service
+  service:
+    name: uwsgi
+    enabled: yes
+    state: restarted
+
 - name: enable nginx service
   service:
     name: nginx
     enabled: yes
     state: restarted
-
-# vim: set et st=2 sts=2 sw=2 ts=2:

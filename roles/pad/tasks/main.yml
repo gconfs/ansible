@@ -15,7 +15,7 @@
 - name: create mysql db
   shell: mysql -f -e 'create database codimd character set utf8; create user codimd; grant all on codimd.* to "codimd"@"localhost" identified by "{{ db_password }}"; flush privileges;'; touch /opt/ansible/mysql_pad_configured
   args:
-      creates: /opt/ansible/mysql_pad_configured
+    creates: /opt/ansible/mysql_pad_configured
 
 - name: clone codimd repo
   git:
