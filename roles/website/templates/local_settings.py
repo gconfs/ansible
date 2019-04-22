@@ -1,7 +1,7 @@
 import os
 from gconfs import settings
 
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ['gconfs.fr']
 
 DATABASES = {
