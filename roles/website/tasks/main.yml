@@ -61,7 +61,7 @@
   cron:
     name: "fetch latest youtube videos"
     special_time: hourly
-    job: "source /srv/website/venv/bin/activate && python /srv/website/manage.py runcrons > /dev/null"
+    job: "cd /srv/website/ && /srv/website/venv/bin/python /srv/website/manage.py runcrons"
 
 - name: enable uwsgi service
   service:
