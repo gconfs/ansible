@@ -13,19 +13,25 @@
     state: present
 
 - name: create mysql db
-  shell: mysql -f -e 'create database codimd character set utf8; create user codimd; grant all on codimd.* to "codimd"@"localhost" identified by "{{ db_password }}"; flush privileges;'; touch /opt/ansible/mysql_pad_configured
+  shell: mysql -f -e 'create database codimd character set utf8; create user codimd; grant all on codimd.* to "codimd"@"localhost" identified by "{{ mysql_pass }}"; flush privileges;'; touch /opt/ansible/mysql_pad_configured
   args:
     creates: /opt/ansible/mysql_pad_configured
 
 - name: clone codimd repo
   git:
-    repo: https://github.com/hackmdio/codimd
+    repo: https://github.com/gconfs/codimd
     dest: /srv/pad
+    version: gconfs
 
 - name: npm install
-  shell: npm install
-  args:
-    chdir: /srv/pad/
+  npm:
+    path: /srv/pad
+    production: yes
+
+- name: npm install yarn
+  npm:
+    name: yarn
+    global: yes
 
 - name: run setup
   shell: ./bin/setup

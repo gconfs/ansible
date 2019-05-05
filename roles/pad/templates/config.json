@@ -20,13 +20,20 @@
         },
         "db": {
             "username": "codimd",
-            "password": "{{ db_password }}",
+            "password": "{{ mysql_pass }}",
             "database": "codimd",
             "host": "localhost",
             "port": "3306",
             "dialect": "mysql"
         },
-        "sessionSecret": "randomgconfssessionsecret"
+        "epita": {
+    	    "clientID": "{{ epita_key }}",
+    	    "clientSecret": "{{ epita_secret }}"
+  	},
+        "sessionSecret": "randomgconfssessionsecret",
+        "allowEmailRegister": false,
+  	"openID": false,
+  	"allowAnonymous": false
     }
 }
 
