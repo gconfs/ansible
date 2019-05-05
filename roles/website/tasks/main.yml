@@ -20,7 +20,7 @@
 
 - name: git clone gconfs django website
   git:
-    repo: 'https://github.com/obynio/gconfs-web'
+    repo: 'https://github.com/gconfs/website'
     dest: /srv/website/
 
 - name: install uwsgi configuration
