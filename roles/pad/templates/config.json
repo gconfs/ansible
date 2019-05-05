@@ -20,7 +20,7 @@
         },
         "db": {
             "username": "codimd",
-            "password": "{{ mysql_pass }}",
+            "password": "{{ codimd_mysql_pass }}",
             "database": "codimd",
             "host": "localhost",
             "port": "3306",

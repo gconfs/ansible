@@ -13,7 +13,7 @@
     state: present
 
 - name: create mysql db
-  shell: mysql -f -e 'create database codimd character set utf8; create user codimd; grant all on codimd.* to "codimd"@"localhost" identified by "{{ mysql_pass }}"; flush privileges;'; touch /opt/ansible/mysql_pad_configured
+  shell: mysql -f -e 'create database codimd character set utf8; create user codimd; grant all on codimd.* to "codimd"@"localhost" identified by "{{ codimd_mysql_pass }}"; flush privileges;'; touch /opt/ansible/mysql_pad_configured
   args:
     creates: /opt/ansible/mysql_pad_configured
 
