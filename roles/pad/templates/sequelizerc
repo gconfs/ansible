@@ -4,5 +4,5 @@ module.exports = {
     'config':          path.resolve('config.json'),
     'migrations-path': path.resolve('lib', 'migrations'),
     'models-path':     path.resolve('lib', 'models'),
-    'url':             'mysql://codimd:{{ codimd_mysql_pass }}@localhost:3306/codimd'
+    'url':             'mysql://codimd:{{ mysql_codimd_pass }}@localhost:3306/codimd'
 }
