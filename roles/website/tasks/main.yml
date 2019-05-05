@@ -14,7 +14,7 @@
       state: directory
 
 - name: mysql config
-  shell: mysql -f -e 'create database website character set utf8; create user website; grant all on website.* to "website"@"localhost" identified by "{{ website_mysql_pass }}"; flush privileges;'
+  shell: mysql -f -e 'create database website character set utf8; create user website; grant all on website.* to "website"@"localhost" identified by "{{ mysql_pass }}"; flush privileges;'
   args:
     creates: /opt/ansible/mysql_website_configured
 

@@ -17,8 +17,8 @@ DATABASES = {
 }
 
 
-SOCIAL_AUTH_EPITA_KEY = '{{ website_epita_key }}'
-SOCIAL_AUTH_EPITA_SECRET = '{{ website_epita_secret }}'
+SOCIAL_AUTH_EPITA_KEY = '{{ epita_key }}'
+SOCIAL_AUTH_EPITA_SECRET = '{{ epita_secret }}'
 
-YOUTUBE_API_KEY = '{{ website_youtube_key }}'
+YOUTUBE_API_KEY = '{{ youtube_key }}'
 YOUTUBE_RUN_EVERY_MINS=10
