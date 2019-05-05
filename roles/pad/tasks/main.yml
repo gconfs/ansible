@@ -33,15 +33,15 @@
     name: yarn
     global: yes
 
-- name: run setup
-  shell: ./bin/setup
-  args:
-    chdir: /srv/pad/
-
 - name: run config template
   template:
     src: config.json
     dest: /srv/pad/config.json
+
+- name: run setup
+  shell: ./bin/setup
+  args:
+    chdir: /srv/pad/
 
 - name: build front end
   shell: npm run build
