@@ -23,11 +23,6 @@
     dest: /srv/pad
     version: gconfs
 
-- name: npm install
-  npm:
-    path: /srv/pad
-    production: yes
-
 - name: npm install yarn
   npm:
     name: yarn

@@ -1,6 +1,6 @@
 - name: install packages
   package:
-      name: nginx,python3-pip,python3-venv,uwsgi,uwsgi-plugin-python3,default-libmysqlclient-dev
+      name: nginx,python3-pip,python3-venv,uwsgi,uwsgi-plugin-python3,default-libmysqlclient-dev,python3-setuptools
       state: present
 
 - name: install nginx vhost for django website
@@ -17,6 +17,11 @@
   shell: mysql -f -e 'create database website character set utf8; create user website; grant all on website.* to "website"@"localhost" identified by "{{ mysql_website_pass }}"; flush privileges;'
   args:
     creates: /opt/ansible/mysql_website_configured
+
+- name: create lock file
+  file:
+    path: /opt/ansible/mysql_website_configured
+    state: touch
 
 - name: git clone gconfs django website
   git:

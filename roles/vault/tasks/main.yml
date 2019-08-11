@@ -2,7 +2,7 @@
 
 - name: install packages
   package:
-    name: nginx,composer,unzip,g++,mariadb-server,php7.0,php7.0-cli,php7.0-common,libapache2-mod-php7.0,php7.0-json,php7.0-readline,php7.0-mysqlnd,libonig4,libqdbm14,php7.0-gd,php7.0-intl,php7.0-simplexml,php7.0-curl,php7.0-dom,php7.0-mbstring,libgpgme11-dev,php7.0-gnupg
+    name: nginx,composer,unzip,g++,mariadb-server,php7.3,php7.3-cli,php7.3-common,libapache2-mod-php7.3,php7.3-json,php7.3-readline,php7.3-mysqlnd,libqdbm14,php7.3-gd,php7.3-intl,php7.3-simplexml,php7.3-curl,php7.3-dom,php7.3-mbstring,libgpgme11-dev,php7.3-gnupg
     state: present
 
 - name: mysql config
@@ -13,6 +13,12 @@
 - name: create lock file
   file:
     path: /opt/ansible/mysql_vault_configured
+    state: touch
+
+- name: create log directory
+  file:
+    path: /var/log/nginx/vault
+    state: directory
 
 - name: install nginx config
   copy:
@@ -60,7 +66,8 @@
     recurse: true
 
 - name: install passbolt
-  shell: composer install --no-dev
+  shell: composer install --no-dev --no-interaction
+  become_user: www-data
   args:
     chdir: /srv/vault
 

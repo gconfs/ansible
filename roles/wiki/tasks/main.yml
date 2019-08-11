@@ -55,6 +55,11 @@
     src: static/custom.css
     dest: /srv/gitit/static/img/custom.css
 
+- name: Delete existing dist folder
+  file:
+    path: /srv/gitit/wikidata
+    state: absent
+
 - name: clone wiki repository
   git:
       repo: https://github.com/gconfs/wiki
