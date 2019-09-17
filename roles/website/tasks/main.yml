@@ -35,6 +35,7 @@
 
 - name: install python packages
   pip:
+    state: latest
     requirements: /srv/website/requirements.txt
     virtualenv_python: python3
     virtualenv: /srv/website/venv
