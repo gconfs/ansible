@@ -85,6 +85,33 @@
     group: shepard
     mode: 0600
 
+- name: create group bruce
+  group:
+      name: bruce
+      state: present
+
+- name: create user bruce
+  user:
+    name: bruce
+    comment: "bruce"
+    groups: wheel,bruce,sudo
+
+- name: create ~bruce/.ssh folder
+  file:
+      path: /home/bruce/.ssh/
+      state: directory
+      owner: bruce
+      group: bruce
+      mode: 0755
+
+- name: copy ssh pubkey for bruce
+  copy:
+    src: etc/ssh/bruce_authorized_keys
+    dest: /home/bruce/.ssh/authorized_keys
+    owner: bruce
+    group: bruce
+    mode: 0600
+
 - name: install packages
   package:
     name: vim,zsh,git,sudo,grc,nmap,mtr,snmpd,ansible,letsencrypt
