@@ -112,6 +112,33 @@
     group: bruce
     mode: 0600
 
+- name: create group sunbro
+  group:
+      name: sunbro
+      state: present
+
+- name: create user sunbro
+  user:
+    name: sunbro
+    comment: "sunbro"
+    groups: wheel,sunbro,sudo
+
+- name: create ~sunbro/.ssh folder
+  file:
+      path: /home/sunbro/.ssh
+      state: directory
+      owner: sunbro
+      group: sunbro
+      mode: 0755
+
+- name: copy ssh pubkey for sunbro
+  copy:
+    src: etc/ssh/sunbro_authorized_keys
+    dest: /home/sunbro/.ssh/authorized_keys
+    owner: sunbro
+    group: sunbro
+    mode: 0600
+
 - name: install packages
   package:
     name: vim,zsh,git,sudo,grc,nmap,mtr,snmpd,ansible,letsencrypt
