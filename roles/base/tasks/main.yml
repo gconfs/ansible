@@ -202,6 +202,12 @@
 - name: request LE certificate
   shell: certbot certonly --agree-tos --email root@gconfs.fr -n --cert-name gconfs.fr --force-renew --rsa-key-size 4096 --webroot -w /srv/letsencrypt -d gconfs.fr -d wiki.gconfs.fr -d vault.gconfs.fr -d pad.gconfs.fr -d jdmi.gconfs.fr -d old.gconfs.fr
 
+- name: set cron job
+  cron:
+    name: "renew certificates due to renewal"
+    special_time: monthly
+    job: "/usr/bin/certbot renew && /usr/bin/systemctl reload nginx"
+
 - name: clear nginx configuration
   file:
     path: /etc/nginx/sites-enabled
