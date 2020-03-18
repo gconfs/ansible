@@ -22,7 +22,6 @@
   git:
     repo: https://github.com/gconfs/codimd
     dest: /srv/pad
-    version: gconfs
 
 - name: npm install yarn
   npm:
