@@ -32,6 +32,7 @@
   	},
         "sessionSecret": "randomgconfssessionsecret",
         "allowEmailRegister": false,
+	"allowPDFExport": false,
   	"openID": false,
   	"allowAnonymous": false
     }

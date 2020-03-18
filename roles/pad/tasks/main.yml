@@ -1,16 +1,17 @@
 ---
-- name: install nodejs 8 repo
-  shell: "wget -qO- https://deb.nodesource.com/setup_8.x | sudo -E bash -"
+- name: download nodejs
+  get_url: 
+    url: https://deb.nodesource.com/setup_11.x
+    dest: /tmp
+    mode: 755
 
-- name: install nodejs 8
+- name: setup nodejs
+  command: /tmp/setup_11.x
+
+- name: install nodejs 11
   apt:
     name: nodejs
-    state: present
-
-- name: install npm
-  apt:
-    name: npm
-    state: present
+    state: latest
 
 - name: create mysql db
   shell: mysql -f -e 'create database codimd character set utf8; create user codimd; grant all on codimd.* to "codimd"@"localhost" identified by "{{ mysql_codimd_pass }}"; flush privileges;'; touch /opt/ansible/mysql_pad_configured
