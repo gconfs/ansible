@@ -1,76 +1,62 @@
 ---
 
-- name: install packages
-  package:
-    name: nginx,gitit
+- name: install dependencies
+  apt:
+    pkg:
+    - nginx
+    - mysql-common
+    - php
+    - php-tidy
     state: present
+
+- name: clone bookstack repository
+  git:
+      repo: https://github.com/BookStackApp/BookStack.git 
+      dest: /srv/wiki
+      version: release
+
+- name: run setup
+  shell: composer install --no-dev
+  args:
+    chdir: /srv/wiki
+
+- name: create mysql db
+  shell: mysql -f -e 'create database bookstack character set utf8; create user bookstack; grant all on bookstack.* to "bookstack"@"localhost" identified by "{{ mysql_bookstack_pass }}"; flush privileges;'; touch /opt/ansible/mysql_bookstack_configured
+  args:
+    creates: /opt/ansible/mysql_bookstack_configured
+
+- name: run config template
+  template:
+    src: env
+    dest: /srv/wiki/.env
+
+- name: migrate database
+  shell: php artisan migrate --no-interaction --force
+  args:
+    chdir: /srv/wiki
+
+- name: clean bookstack cache
+  shell: php artisan cache:clear
+  args:
+    chdir: /srv/wiki
+
+- name: clean bookstack view
+  shell: php artisan view:clear
+  args:
+    chdir: /srv/wiki
 
 - name: install nginx vhost for wiki
   copy:
     src: etc/nginx.conf
     dest: /etc/nginx/sites-enabled/wiki
 
-- name: install gitit configuration
-  copy:
-    src: etc/gitit.conf
-    dest: /etc/gitit.conf
-
-- name: install gitit service
-  copy:
-    src: etc/systemd/gitit.service
-    dest: /etc/systemd/system/gitit.service
-
-- name: daemon-reload
-  shell: systemctl daemon-reload
-
-- name: create gitit directory
-  file:
-    path: /srv/gitit
-    state: directory
-
-- name: enable gitit service
-  service:
-    name: gitit
-    enabled: yes
-    state: restarted
-
-- name: create nginx wiki log directory
-  file:
-    path: /var/log/nginx/wiki
-    state: directory
-
-- name: enable nginx service
+- name: restart nginx service
   service:
     name: nginx
     enabled: yes
     state: restarted
 
-- name: install gconfs logo
-  copy:
-    src: static/gconfs.png
-    dest: /srv/gitit/static/img/logo.png
 
-- name: install custom css
-  copy:
-    src: static/custom.css
-    dest: /srv/gitit/static/img/custom.css
 
-- name: Delete existing dist folder
-  file:
-    path: /srv/gitit/wikidata
-    state: absent
-
-- name: clone wiki repository
-  git:
-      repo: https://github.com/gconfs/wiki
-      dest: /srv/gitit/wikidata
-
-- name: set permissions for wikidata
-  file:
-      path: /srv/gitit/wikidata
-      owner: root
-      group: wheel
-      mode: 0775
-      recurse: yes
 
 # vim: set et st=2 sts=2 sw=2 ts=2:

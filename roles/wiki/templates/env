@@ -1,0 +1,28 @@
+# Application key
+# Used for encryption where needed.
+APP_KEY={{ appkey_bookstack }}
+
+# Base url of wiki
+APP_URL=https://wiki.gconfs.fr
+
+# Database details
+DB_HOST=localhost
+DB_DATABASE=bookstack
+DB_USERNAME=bookstack
+DB_PASSWORD={{ mysql_bookstack_pass }}
+
+# Storage details
+STORAGE_TYPE=local
+
+# Interface defails
+APP_VIEWS_BOOKS=list
+APP_VIEWS_BOOKSHELVES=list
+
+# Slack authentification
+SLACK_APP_ID={{ slackid_bookstack }}
+SLACK_APP_SECRET={{ slacksecret_bookstack }}
+SLACK_AUTO_REGISTER=true
+
+# Ensure correct security
+ALLOW_ROBOTS=false
+SESSION_SECURE_COOKIE=true
