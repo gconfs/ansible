@@ -1,6 +1,7 @@
 import os
 from gconfs import settings
 
+SECRET_KEY='{{ website_secretkey }}'
 DEBUG = False
 ALLOWED_HOSTS = ['gconfs.fr']
 
