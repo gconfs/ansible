@@ -139,6 +139,33 @@
     group: sunbro
     mode: 0600
 
+- name: create group prydatar
+  group:
+      name: prydatar
+      state: present
+
+- name: create user prydatar
+  user:
+    name: prydatar
+    comment: "prydatar"
+    groups: wheel,prydatar,sudo
+
+- name: create ~prydatar/.ssh folder
+  file:
+      path: /home/prydatar/.ssh/
+      state: directory
+      owner: prydatar
+      group: prydatar
+      mode: 0755
+
+- name: copy ssh pubkey for prydatar
+  copy:
+    src: etc/ssh/prydatar_authorized_keys
+    dest: /home/prydatar/.ssh/authorized_keys
+    owner: prydatar
+    group: prydatar
+    mode: 0600
+
 - name: install packages
   package:
     name: vim,zsh,git,sudo,grc,nmap,mtr,snmpd,ansible,letsencrypt
