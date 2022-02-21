@@ -1,0 +1,9 @@
+[Unit]
+Description=Certbot Renewal System
+
+[Service]
+ExecStart=/usr/bin/certbot certonly --agree-tos --email root@gconfs.fr -n --cert-name gconfs.fr --force-renew --rsa-key-size 4096 --webroot -w /srv/letsencrypt -d gconfs.fr -d wiki.gconfs.fr -d vault.gconfs.fr -d pad.gconfs.fr -d jdmi.gconfs.fr -d old.gconfs.fr --post-hook "systemctl restart nginx"
+
+[Install]
+WantedBy=multi-user.target
+
