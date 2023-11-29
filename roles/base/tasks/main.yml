@@ -4,6 +4,11 @@
       name: sudo
       state: present
 
+- name: create wheel group
+  group:
+      name: wheel
+      state: present
+
 - name: create group wxcafe
   group:
       name: wxcafe
@@ -168,7 +173,7 @@
 
 - name: install packages
   package:
-    name: vim,zsh,git,sudo,grc,nmap,mtr,snmpd,ansible,letsencrypt
+    name: vim,zsh,git,sudo,grc,nmap,mtr,snmpd,ansible,letsencrypt,nginx,mariadb-server
     state: present
 
 - name: install snmpd configuration
@@ -261,4 +266,5 @@
   service:
     name: nginx
     state: reloaded
+
 # vim: set et st=2 sts=2 sw=2 ts=2:

@@ -21,11 +21,12 @@
 - name: create lock file
   file:
     path: /opt/ansible/mysql_website_configured
+    force: true
     state: touch
 
 - name: git clone gconfs django website
   git:
-    repo: 'https://github.com/gconfs/website'
+    repo: 'git@github.com:gconfs/website.git'
     dest: /srv/website/
 
 - name: install uwsgi configuration
