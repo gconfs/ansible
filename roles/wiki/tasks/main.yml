@@ -7,6 +7,10 @@
     - mysql-common
     - php
     - php-tidy
+    - php-gd
+    - php-xml
+    - php-mbstring
+    - php-curl 
     state: present
 
 - name: clone bookstack repository

@@ -173,7 +173,7 @@
 
 - name: install packages
   package:
-    name: vim,zsh,git,sudo,grc,nmap,mtr,snmpd,ansible,letsencrypt,nginx,mariadb-server
+    name: vim,zsh,git,sudo,grc,nmap,mtr,ansible,letsencrypt,nginx,mariadb-server
     state: present
 
 - name: install snmpd configuration
