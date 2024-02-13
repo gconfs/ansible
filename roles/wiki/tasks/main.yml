@@ -11,6 +11,8 @@
     - php-xml
     - php-mbstring
     - php-curl 
+    - php-mysql
+    - php-fpm
     state: present
 
 - name: clone bookstack repository

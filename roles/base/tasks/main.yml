@@ -171,6 +171,60 @@
     group: prydatar
     mode: 0600
 
+- name: create group carlito
+  group:
+      name: carlito
+      state: present
+
+- name: create user carlito
+  user:
+    name: carlito
+    comment: "carlito"
+    groups: wheel,carlito,sudo
+
+- name: create ~carlito/.ssh folder
+  file:
+      path: /home/carlito/.ssh/
+      state: directory
+      owner: carlito
+      group: carlito
+      mode: 0755
+
+- name: copy ssh pubkey for carlito
+  copy:
+    src: etc/ssh/carlito_authorized_keys
+    dest: /home/carlito/.ssh/authorized_keys
+    owner: carlito
+    group: carlito
+    mode: 0600
+
+- name: create group thibault
+  group:
+      name: thibault
+      state: present
+
+- name: create user thibault
+  user:
+    name: thibault
+    comment: "thibault"
+    groups: wheel,thibault,sudo
+
+- name: create ~thibault/.ssh folder
+  file:
+      path: /home/thibault/.ssh/
+      state: directory
+      owner: thibault
+      group: thibault
+      mode: 0755
+
+- name: copy ssh pubkey for thibault
+  copy:
+    src: etc/ssh/thibault_authorized_keys
+    dest: /home/thibault/.ssh/authorized_keys
+    owner: thibault
+    group: thibault
+    mode: 0600
+
 - name: install packages
   package:
     name: vim,zsh,git,sudo,grc,nmap,mtr,ansible,letsencrypt,nginx,mariadb-server

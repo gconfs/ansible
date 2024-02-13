@@ -1,0 +1,151 @@
+---
+- name: download nodejs
+  get_url:
+    url: https://deb.nodesource.com/setup_16.x
+    dest: /tmp
+    mode: 755
+
+- name: setup nodejs
+  command: /tmp/setup_16.x
+
+- name: install dependencies
+  apt:
+    state: latest
+    name:
+      - git
+      - redis
+      - nodejs
+      - python3-psycopg2
+
+- name: npm install yarn
+  npm:
+    name: yarn
+    global: yes
+
+- name: create outline system group
+  group:
+    name: '{{ outline_system_group }}'
+    system: true
+
+- name: create outline system user
+  user:
+    name: '{{ outline_system_user }}'
+    system: true
+    shell: '/sbin/nologin'
+    group: '{{ outline_system_group }}'
+    createhome: false
+
+- name: enable and start postgresql service
+  service:
+    name: 'postgresql.service'
+    state: started
+    enabled: yes
+
+- name: create database for outline
+  become: true
+  become_user: postgres
+  postgresql_db:
+    name: '{{ outline_postgres_db }}'
+
+- name: create user for outline
+  become: true
+  become_user: postgres
+  postgresql_user:
+    db: '{{ outline_postgres_db }}'
+    name: '{{ outline_postgres_user }}'
+    password: '{{ outline_postgres_password }}'
+  no_log: yes
+
+- name: enable and start redis service
+  service:
+    name: 'redis.service'
+    state: started
+    enabled: yes
+
+- name: create outline home
+  file:
+    path: '/srv/outline'
+    state: directory
+    owner: '{{ outline_system_user }}'
+    group: '{{ outline_system_group }}'
+    mode: 0775
+
+- name: install outline
+  become: yes
+  become_user: '{{ outline_system_user }}'
+  git:
+    repo: https://github.com/outline/outline.git
+    dest: '/srv/outline'
+    version: v0.63.0
+    force: yes
+
+- name: yarn install
+  become: yes
+  become_user: '{{ outline_system_user }}'
+  yarn:
+    path: '/srv/outline'
+    state: latest
+
+- name: create systemd service
+  template:
+    src: 'outline.service'
+    dest: '/etc/systemd/system/outline.service'
+  notify: service modified
+
+- name: copy env file
+  template:
+    src: 'env'
+    dest: '/srv/outline/.env'
+    owner: '{{ outline_system_user }}'
+    group: '{{ outline_system_group }}'
+
+- name: copy outlaw patch
+  copy:
+    src: 'outlaw.patch'
+    dest: '/srv/outline'
+    owner: '{{ outline_system_user }}'
+    group: '{{ outline_system_group }}'
+
+- name: git apply outlaw patch
+  become: yes
+  become_user: '{{ outline_system_user }}'
+  shell: git apply outlaw.patch
+  args:
+    chdir: '/srv/outline'
+
+- name: copy teamlogo patch
+  copy:
+    src: 'teamlogo.patch'
+    dest: '/srv/outline'
+    owner: '{{ outline_system_user }}'
+    group: '{{ outline_system_group }}'
+
+- name: git apply teamlogo patch
+  become: yes
+  become_user: '{{ outline_system_user }}'
+  shell: git apply teamlogo.patch
+  args:
+    chdir: '/srv/outline'
+
+- name: yarn build frontend
+  become: yes
+  become_user: '{{ outline_system_user }}'
+  shell: yarn build
+  args:
+    chdir: '/srv/outline'
+
+- name: yarn sequelize:migrate
+  become: yes
+  become_user: '{{ outline_system_user }}'
+  shell: yarn sequelize:migrate --env production-ssl-disabled
+  args:
+    chdir: '/srv/outline'
+  notify: service modified
+
+- name: enable and start outline service
+  service:
+    name: 'outline.service'
+    state: started
+    enabled: true
+
+# vim: set et st=2 sts=2 sw=2 ts=2:
