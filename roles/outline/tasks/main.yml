@@ -1,26 +1,15 @@
 ---
-- name: download nodejs
-  get_url:
-    url: https://deb.nodesource.com/setup_16.x
-    dest: /tmp
-    mode: 755
-
-- name: setup nodejs
-  command: /tmp/setup_16.x
-
-- name: install dependencies
+- name: Remove node package, in lieu of nvm
   apt:
-    state: latest
-    name:
-      - git
-      - redis
-      - nodejs
-      - python3-psycopg2
+    name: ["nodejs", "node"]
+    state: absent
+  become: true
 
-- name: npm install yarn
-  npm:
-    name: yarn
-    global: yes
+- name: Install required system packages
+  apt:
+    name: ["build-essential", "git", "openssl", "libssl-dev", "curl",  "postgresql", "python3-psycopg2"]
+    state: present
+  become: true
 
 - name: create outline system group
   group:
@@ -31,9 +20,30 @@
   user:
     name: '{{ outline_system_user }}'
     system: true
-    shell: '/sbin/nologin'
+    shell: '/bin/bash'
     group: '{{ outline_system_group }}'
     createhome: false
+    home: '/var/lib/{{ outline_system_user }}'
+
+- name: download nvm
+  get_url:
+    url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh
+    owner: '{{ outline_system_user }}'
+    group: '{{ outline_system_group }}'
+    dest: '/var/lib/{{ outline_system_user }}'
+    mode: 'u=rwx,g=rx,o=rx'
+
+- name: install nvm
+  become: yes
+  become_user: '{{ outline_system_user }}'
+  command: '/var/lib/{{ outline_system_user }}/install.sh'
+
+- name: install node and set version
+  become: yes
+  become_user: '{{ outline_system_user }}'
+  shell: "source /var/lib/{{ outline_system_user }}/.nvm/nvm.sh && nvm install 22"
+  args:
+    executable: /bin/bash
 
 - name: enable and start postgresql service
   service:
@@ -76,15 +86,15 @@
   git:
     repo: https://github.com/outline/outline.git
     dest: '/srv/outline'
-    version: v0.63.0
+    version: v0.86.1
     force: yes
 
 - name: yarn install
   become: yes
   become_user: '{{ outline_system_user }}'
-  yarn:
-    path: '/srv/outline'
-    state: latest
+  shell: npm install --legacy-peer-deps
+  args:
+    chdir: '/srv/outline'
 
 - name: create systemd service
   template:
@@ -99,45 +109,17 @@
     owner: '{{ outline_system_user }}'
     group: '{{ outline_system_group }}'
 
-- name: copy outlaw patch
-  copy:
-    src: 'outlaw.patch'
-    dest: '/srv/outline'
-    owner: '{{ outline_system_user }}'
-    group: '{{ outline_system_group }}'
-
-- name: git apply outlaw patch
-  become: yes
-  become_user: '{{ outline_system_user }}'
-  shell: git apply outlaw.patch
-  args:
-    chdir: '/srv/outline'
-
-- name: copy teamlogo patch
-  copy:
-    src: 'teamlogo.patch'
-    dest: '/srv/outline'
-    owner: '{{ outline_system_user }}'
-    group: '{{ outline_system_group }}'
-
-- name: git apply teamlogo patch
-  become: yes
-  become_user: '{{ outline_system_user }}'
-  shell: git apply teamlogo.patch
-  args:
-    chdir: '/srv/outline'
-
 - name: yarn build frontend
   become: yes
   become_user: '{{ outline_system_user }}'
-  shell: yarn build
+  shell: npm run build
   args:
     chdir: '/srv/outline'
 
 - name: yarn sequelize:migrate
   become: yes
   become_user: '{{ outline_system_user }}'
-  shell: yarn sequelize:migrate --env production-ssl-disabled
+  shell: yarn sequelize:migrate
   args:
     chdir: '/srv/outline'
   notify: service modified

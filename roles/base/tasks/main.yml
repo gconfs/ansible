@@ -227,21 +227,8 @@
 
 - name: install packages
   package:
-    name: vim,zsh,git,sudo,grc,nmap,mtr,ansible,letsencrypt,nginx,mariadb-server
+    name: vim,zsh,git,sudo,grc,nmap,mtr,ansible,letsencrypt,nginx,mariadb-server,virtualenv,cron,libmariadb-dev,pkg-config,zip,unzip,python3-certbot-nginx
     state: present
-
-- name: install snmpd configuration
-  copy:
-      src: etc/snmp/snmpd.conf
-      dest: /etc/snmp/snmpd.conf
-      owner: root
-      group: root
-      mode: 0400
-
-- name: restart snmpd
-  service:
-    name: snmpd
-    state: restarted
 
 - name: install sudo config
   copy:
