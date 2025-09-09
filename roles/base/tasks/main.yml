@@ -225,6 +225,33 @@
     group: thibault
     mode: 0600
 
+- name: create group mrvym
+  group:
+      name: mrvym 
+      state: present
+
+- name: create user mrvym
+  user:
+    name: mrvym 
+    comment: "mrvym"
+    groups: wheel,mrvym,sudo
+
+- name: create ~mrvym/.ssh folder
+  file:
+      path: /home/mrvym/.ssh/
+      state: directory
+      owner: mrvym 
+      group: mrvym 
+      mode: 0755
+
+- name: copy ssh pubkey for mrvym
+  copy:
+    src: etc/ssh/mrvym_authorized_keys
+    dest: /home/mrvym/.ssh/authorized_keys
+    owner: carlito
+    group: carlito
+    mode: 0600
+
 - name: install packages
   package:
     name: vim,zsh,git,sudo,grc,nmap,mtr,ansible,letsencrypt,nginx,mariadb-server,virtualenv,cron,libmariadb-dev,pkg-config,zip,unzip,python3-certbot-nginx
