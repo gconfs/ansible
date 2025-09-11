@@ -36,33 +36,6 @@
     group: wxcafe
     mode: 0600
 
-- name: create group multun
-  group:
-      name: multun
-      state: present
-
-- name: create user multun
-  user:
-    name: multun
-    comment: "multun"
-    groups: wheel,multun,sudo
-
-- name: create ~multun/.ssh folder
-  file:
-      path: /home/multun/.ssh/
-      state: directory
-      owner: multun
-      group: multun
-      mode: 0755
-
-- name: copy ssh pubkey for multun
-  copy:
-    src: etc/ssh/multun_authorized_keys
-    dest: /home/multun/.ssh/authorized_keys
-    owner: multun
-    group: multun
-    mode: 0600
-
 - name: create group shepard
   group:
       name: shepard
@@ -90,33 +63,6 @@
     group: shepard
     mode: 0600
 
-- name: create group bruce
-  group:
-      name: bruce
-      state: present
-
-- name: create user bruce
-  user:
-    name: bruce
-    comment: "bruce"
-    groups: wheel,bruce,sudo
-
-- name: create ~bruce/.ssh folder
-  file:
-      path: /home/bruce/.ssh/
-      state: directory
-      owner: bruce
-      group: bruce
-      mode: 0755
-
-- name: copy ssh pubkey for bruce
-  copy:
-    src: etc/ssh/bruce_authorized_keys
-    dest: /home/bruce/.ssh/authorized_keys
-    owner: bruce
-    group: bruce
-    mode: 0600
-
 - name: create group sunbro
   group:
       name: sunbro
@@ -142,87 +88,6 @@
     dest: /home/sunbro/.ssh/authorized_keys
     owner: sunbro
     group: sunbro
-    mode: 0600
-
-- name: create group prydatar
-  group:
-      name: prydatar
-      state: present
-
-- name: create user prydatar
-  user:
-    name: prydatar
-    comment: "prydatar"
-    groups: wheel,prydatar,sudo
-
-- name: create ~prydatar/.ssh folder
-  file:
-      path: /home/prydatar/.ssh/
-      state: directory
-      owner: prydatar
-      group: prydatar
-      mode: 0755
-
-- name: copy ssh pubkey for prydatar
-  copy:
-    src: etc/ssh/prydatar_authorized_keys
-    dest: /home/prydatar/.ssh/authorized_keys
-    owner: prydatar
-    group: prydatar
-    mode: 0600
-
-- name: create group carlito
-  group:
-      name: carlito
-      state: present
-
-- name: create user carlito
-  user:
-    name: carlito
-    comment: "carlito"
-    groups: wheel,carlito,sudo
-
-- name: create ~carlito/.ssh folder
-  file:
-      path: /home/carlito/.ssh/
-      state: directory
-      owner: carlito
-      group: carlito
-      mode: 0755
-
-- name: copy ssh pubkey for carlito
-  copy:
-    src: etc/ssh/carlito_authorized_keys
-    dest: /home/carlito/.ssh/authorized_keys
-    owner: carlito
-    group: carlito
-    mode: 0600
-
-- name: create group thibault
-  group:
-      name: thibault
-      state: present
-
-- name: create user thibault
-  user:
-    name: thibault
-    comment: "thibault"
-    groups: wheel,thibault,sudo
-
-- name: create ~thibault/.ssh folder
-  file:
-      path: /home/thibault/.ssh/
-      state: directory
-      owner: thibault
-      group: thibault
-      mode: 0755
-
-- name: copy ssh pubkey for thibault
-  copy:
-    src: etc/ssh/thibault_authorized_keys
-    dest: /home/thibault/.ssh/authorized_keys
-    owner: thibault
-    group: thibault
     mode: 0600
 
 - name: create group mrvym
